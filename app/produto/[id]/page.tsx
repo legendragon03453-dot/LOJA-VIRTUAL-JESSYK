@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/client';
 import { useCartStore } from '@/store/useCartStore';
 import { Menu, X, Plus, Minus, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
+import { CartDrawer } from '@/app/components/CartDrawer';
 
 export default function ProductPage({ params }: { params: { id: string } }) {
   const supabase = createClient();
@@ -102,6 +103,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               <button className="text-xl hover:text-gray-400 uppercase" onClick={() => { setIsMobileMenuOpen(false); toggleCart(); }}>SACOLA</button>
           </div>
       )}
+
+      <CartDrawer />
 
       {/* Ajustado pt-32 para dar espaço ao menu fixo */}
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 pt-32 pb-20">

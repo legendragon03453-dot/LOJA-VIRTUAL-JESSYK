@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: "As BOLSAS que você sempre SONHOU AQUI!",
 };
 
+import { AlertModal } from "./components/AlertModal";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -13,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <AlertModal />
+        {children}
+      </body>
     </html>
   );
 }

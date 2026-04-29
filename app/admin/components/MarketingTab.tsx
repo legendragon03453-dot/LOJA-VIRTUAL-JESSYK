@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import { useAlertStore } from '@/store/useAlertStore';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 
 export function MarketingTab() {
@@ -32,7 +33,7 @@ export function MarketingTab() {
       setNewCoupon({ code: '', discount_percentage: '' });
       fetchCoupons();
     } else {
-      alert("Erro ao adicionar cupom. Verifique se o código já existe.");
+      useAlertStore.getState().showAlert("Erro ao adicionar cupom. Verifique se o código já existe.");
     }
     setAdding(false);
   };
@@ -43,9 +44,10 @@ export function MarketingTab() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Deletar este cupom?")) return;
-    const { error } = await supabase.from('coupons').delete().eq('id', id);
-    if (!error) fetchCoupons();
+    useAlertStore.getState().showConfirm("Deletar este cupom?", async () => {
+      const { error } = await supabase.from('coupons').delete().eq('id', id);
+      if (!error) fetchCoupons();
+    });
   };
 
   return (

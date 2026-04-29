@@ -82,22 +82,7 @@ export default function Home() {
     };
   }, []);
 
-  const handleCheckout = async () => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-    
-    // Check if user has address
-    const { data } = await supabase.from('clients').select('address, zip_code').eq('id', user.id).single();
-    if (!data || !data.address || !data.zip_code) {
-      alert('Por favor, preencha seu Endereço de Entrega na aba "Minha Conta" antes de finalizar a compra.');
-      router.push('/conta');
-    } else {
-      // Proceed to checkout logic
-      alert('Redirecionando para o pagamento seguro...');
-    }
-  };
+
 
   return (
     <main className="w-full font-['Helvetica',_sans-serif]">

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { useAlertStore } from '@/store/useAlertStore';
+import { Loader2, Plus, Trash2, Tag } from 'lucide-react';
 
 export function CategoriesTab() {
   const supabase = createClient();
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [adding, setAdding] = useState(false);
-  const [name, setName] = useState('');
+  const [newCat, setNewCat] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -15,30 +15,31 @@ export function CategoriesTab() {
 
   const fetchCategories = async () => {
     setLoading(true);
-    const { data } = await supabase.from('categories').select('*').order('created_at', { ascending: false });
+    const { data } = await supabase.from('categories').select('*').order('name');
     if (data) setCategories(data);
     setLoading(false);
   };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name) return;
-    setAdding(true);
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const { error } = await supabase.from('categories').insert([{ name, slug }]);
-    if (!error) {
-      setName('');
-      fetchCategories();
+    if (!newCat.trim()) return;
+    
+    const slug = newCat.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const { error } = await supabase.from('categories').insert([{ name: newCat.trim(), slug }]);
+    
+    if (error) {
+      useAlertStore.getState().showAlert("Erro ao adicionar categoria.");
     } else {
-      alert("Erro ao adicionar categoria.");
+      setNewCat('');
+      fetchCategories();
     }
-    setAdding(false);
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Deletar categoria?")) return;
-    const { error } = await supabase.from('categories').delete().eq('id', id);
-    if (!error) fetchCategories();
+    useAlertStore.getState().showConfirm("Deletar categoria?", async () => {
+      await supabase.from('categories').delete().eq('id', id);
+      fetchCategories();
+    });
   };
 
   return (

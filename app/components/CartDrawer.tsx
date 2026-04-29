@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCartStore } from '@/store/useCartStore';
+import { useAlertStore } from '@/store/useAlertStore';
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
@@ -32,10 +33,10 @@ export function CartDrawer() {
     // Check if user has address
     const { data } = await supabase.from('clients').select('address, zip_code').eq('id', user.id).single();
     if (!data || !data.address || !data.zip_code) {
-      alert('Por favor, preencha seu Endereço de Entrega na aba "Minha Conta" antes de finalizar a compra.');
+      useAlertStore.getState().showAlert('Por favor, preencha seu Endereço de Entrega na aba "Minha Conta" antes de finalizar a compra.');
       router.push('/conta');
     } else {
-      alert('Redirecionando para o pagamento seguro...');
+      useAlertStore.getState().showAlert('Redirecionando para o pagamento seguro...');
     }
   };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Filter, Plus, Loader2, X, Package, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
+import { useAlertStore } from '@/store/useAlertStore';
 
 export function ProductsTab({ setActiveTab }: { setActiveTab: (t: string) => void }) {
   const supabase = createClient();
@@ -106,24 +107,27 @@ export function ProductsTab({ setActiveTab }: { setActiveTab: (t: string) => voi
         image: null, additionalMedia: []
       });
       fetchProducts();
-      setTimeout(() => setSuccessMsg(null), 3000);
     } catch (err) {
       console.error("Erro no cadastro:", err);
-      alert("Erro ao salvar produto.");
+      useAlertStore.getState().showAlert("Erro ao salvar produto.");
     } finally {
       setUploading(false);
     }
   };
 
+  const handleDelete = async (id: string) => {
+    useAlertStore.getState().showConfirm("Deseja realmente deletar este produto?", async () => {
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) {
+        useAlertStore.getState().showAlert("Erro ao deletar produto.");
+      } else {
+        fetchProducts();
+      }
+    });
+  };
+
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {successMsg && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3 text-emerald-800 text-sm">
-          <CheckCircle2 size={18} />
-          {successMsg}
-        </div>
-      )}
-
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Acervo de Itens ({products.length})</h1>
         <div className="flex gap-2">

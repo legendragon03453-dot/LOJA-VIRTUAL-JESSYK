@@ -5,12 +5,14 @@ import { Menu, X, ShoppingBag, Search, SlidersHorizontal, User } from 'lucide-re
 import { createClient } from '@/utils/supabase/client';
 import { useCartStore } from '@/store/useCartStore';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const router = useRouter();
   
   // Dynamic Data
   const supabase = createClient();
@@ -78,6 +80,23 @@ export default function Home() {
       }
     };
   }, []);
+
+  const handleCheckout = async () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    
+    // Check if user has address
+    const { data } = await supabase.from('clients').select('address, zip_code').eq('id', user.id).single();
+    if (!data || !data.address || !data.zip_code) {
+      alert('Por favor, preencha seu Endereço de Entrega na aba "Minha Conta" antes de finalizar a compra.');
+      router.push('/conta');
+    } else {
+      // Proceed to checkout logic
+      alert('Redirecionando para o pagamento seguro...');
+    }
+  };
 
   return (
     <main className="w-full font-['Helvetica',_sans-serif]">
@@ -190,7 +209,7 @@ export default function Home() {
                   <span className="text-gray-400 tracking-widest uppercase text-sm">Total do Investimento</span>
                   <span className="text-white text-xl font-light">{cartTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                 </div>
-                <button className="w-full bg-white text-black font-bold tracking-widest uppercase p-4 hover:bg-[#A9AFDE] transition-colors">
+                <button onClick={handleCheckout} className="w-full bg-white text-black font-bold tracking-widest uppercase p-4 hover:bg-[#A9AFDE] transition-colors">
                   FINALIZAR AQUISIÇÃO
                 </button>
               </div>

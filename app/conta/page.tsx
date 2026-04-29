@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { Loader2, Package, CheckCircle2, Truck, Box, DollarSign, LogOut, MessageCircle, Mail, ShoppingBag } from 'lucide-react';
+import { Loader2, Package, CheckCircle2, Truck, Box, DollarSign, LogOut, MessageCircle, Mail, ShoppingBag, MapPin, Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/useCartStore';
 import Link from 'next/link';
@@ -24,6 +24,17 @@ export default function ClientAccountPage() {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Address State
+  const [addressData, setAddressData] = useState({
+    country: '',
+    city: '',
+    zip_code: '',
+    address: '',
+    complement: ''
+  });
+  const [savingAddress, setSavingAddress] = useState(false);
+  const [addressMsg, setAddressMsg] = useState({ type: '', text: '' });
+
   // Zustand Cart
   const { items: cartItems } = useCartStore();
 
@@ -42,6 +53,23 @@ export default function ClientAccountPage() {
     }
     
     setUser(session.user);
+
+    // Fetch Client Data (Address)
+    const { data: clientData } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('id', session.user.id)
+      .single();
+      
+    if (clientData) {
+      setAddressData({
+        country: clientData.country || '',
+        city: clientData.city || '',
+        zip_code: clientData.zip_code || '',
+        address: clientData.address || '',
+        complement: clientData.complement || ''
+      });
+    }
 
     // Fetch User's Orders
     const { data: userOrders } = await supabase
@@ -62,6 +90,30 @@ export default function ClientAccountPage() {
     if (featured) setSuggestions(featured);
 
     setLoading(false);
+  };
+
+  const saveAddress = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingAddress(true);
+    setAddressMsg({ type: '', text: '' });
+
+    const { error } = await supabase
+      .from('clients')
+      .update({
+        country: addressData.country,
+        city: addressData.city,
+        zip_code: addressData.zip_code,
+        address: addressData.address,
+        complement: addressData.complement
+      })
+      .eq('id', user.id);
+
+    if (error) {
+      setAddressMsg({ type: 'error', text: 'Erro ao salvar localização.' });
+    } else {
+      setAddressMsg({ type: 'success', text: 'Localização atualizada com sucesso!' });
+    }
+    setSavingAddress(false);
   };
 
   const handleLogout = async () => {
@@ -166,6 +218,71 @@ export default function ClientAccountPage() {
               })}
             </div>
           )}
+        </section>
+
+        {/* Section 1.5: Endereço de Entrega */}
+        <section className="bg-[#242628] border border-zinc-800 p-8 md:p-10">
+          <h2 className="text-sm font-bold tracking-widest uppercase text-white mb-6 flex items-center gap-2">
+            <MapPin size={18} className="text-[#A9AFDE]" /> Endereço de Entrega (Obrigatório)
+          </h2>
+          
+          {addressMsg.text && (
+            <div className={`p-4 mb-6 text-xs tracking-widest uppercase border ${addressMsg.type === 'error' ? 'bg-rose-950/30 border-rose-900 text-rose-500' : 'bg-emerald-950/30 border-emerald-900 text-emerald-500'}`}>
+              {addressMsg.text}
+            </div>
+          )}
+
+          <form onSubmit={saveAddress} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">País</label>
+              <input 
+                required type="text" placeholder="Ex: Brasil"
+                className="w-full bg-transparent border-b border-zinc-700 py-2 text-sm text-white outline-none focus:border-[#A9AFDE] transition-colors"
+                value={addressData.country} onChange={e => setAddressData({...addressData, country: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">CEP / ZIP Code</label>
+              <input 
+                required type="text" placeholder="00000-000"
+                className="w-full bg-transparent border-b border-zinc-700 py-2 text-sm text-white outline-none focus:border-[#A9AFDE] transition-colors"
+                value={addressData.zip_code} onChange={e => setAddressData({...addressData, zip_code: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Cidade / Estado</label>
+              <input 
+                required type="text" placeholder="Ex: São Paulo, SP"
+                className="w-full bg-transparent border-b border-zinc-700 py-2 text-sm text-white outline-none focus:border-[#A9AFDE] transition-colors"
+                value={addressData.city} onChange={e => setAddressData({...addressData, city: e.target.value})}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Endereço Completo</label>
+              <input 
+                required type="text" placeholder="Rua, Avenida, Número, Bairro"
+                className="w-full bg-transparent border-b border-zinc-700 py-2 text-sm text-white outline-none focus:border-[#A9AFDE] transition-colors"
+                value={addressData.address} onChange={e => setAddressData({...addressData, address: e.target.value})}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Complemento (Opcional)</label>
+              <input 
+                type="text" placeholder="Apto, Bloco, Ponto de referência..."
+                className="w-full bg-transparent border-b border-zinc-700 py-2 text-sm text-white outline-none focus:border-[#A9AFDE] transition-colors"
+                value={addressData.complement} onChange={e => setAddressData({...addressData, complement: e.target.value})}
+              />
+            </div>
+
+            <div className="md:col-span-2 mt-4">
+              <button 
+                type="submit" disabled={savingAddress}
+                className="w-full md:w-auto bg-white text-black px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#A9AFDE] hover:text-white transition-colors flex items-center justify-center gap-2"
+              >
+                {savingAddress ? <Loader2 size={16} className="animate-spin" /> : <><Save size={16} /> Salvar Localização</>}
+              </button>
+            </div>
+          </form>
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">

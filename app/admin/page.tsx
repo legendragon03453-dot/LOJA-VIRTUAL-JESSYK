@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import { useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Package, 
@@ -34,9 +35,24 @@ export default function AdminPage() {
   // Fake Modal State for Dashboard cross-communication
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const router = useRouter();
+
   // Auth / Role State
-  const [userRole, setUserRole] = useState('CEO'); // Default to CEO to see everything
-  const [loadingAuth, setLoadingAuth] = useState(false); // In a real app, this waits for session
+  const [userRole, setUserRole] = useState('');
+  const [loadingAuth, setLoadingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session || session.user.email !== 'legendragon03453@gmail.com') {
+        router.push('/');
+      } else {
+        setUserRole('CEO');
+        setLoadingAuth(false);
+      }
+    };
+    checkAuth();
+  }, [router, supabase]);
 
   const SidebarItem = ({ id, icon: Icon, label, restrictCEO = false }: { id: string, icon: any, label: string, restrictCEO?: boolean }) => {
     if (restrictCEO && userRole !== 'CEO') return null;

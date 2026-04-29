@@ -284,9 +284,13 @@ export default function Home() {
                 }).slice(0, 12).map(product => (
                   <div key={`search-${product.id}`} className="group flex flex-col">
                     <div className="aspect-square bg-white w-full flex items-center justify-center p-4 relative overflow-hidden">
-                       <img src={product.image_url} alt={product.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
-                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <button onClick={() => { addItem(product); setIsSearchOpen(false); setIsCartOpen(true); }} className="bg-white text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-[#A9AFDE] hover:text-white transition-colors">Ver Peça</button>
+                       <Link href={`/produto/${product.id}`} onClick={() => setIsSearchOpen(false)}>
+                         <img src={product.image_url} alt={product.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
+                       </Link>
+                       <div className="absolute inset-0 pointer-events-none bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Link href={`/produto/${product.id}`} onClick={() => setIsSearchOpen(false)} className="bg-white pointer-events-auto text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-[#A9AFDE] hover:text-white transition-colors">
+                            Ver Peça
+                          </Link>
                        </div>
                     </div>
                     <div className="mt-3">
@@ -353,24 +357,34 @@ export default function Home() {
             {products.slice(0, 4).map(product => (
               <div key={product.id} className="flex flex-col group w-full">
                 <div className="aspect-square bg-white w-full flex items-center justify-center overflow-hidden mb-4 p-6 shadow-sm relative">
-                  <img 
-                    src={product.image_url} 
-                    alt={product.name} 
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                  />
-                  {/* Hover Add to Cart Button */}
-                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Link href={`/produto/${product.id}`}>
+                    <img 
+                      src={product.image_url} 
+                      alt={product.name} 
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </Link>
+                  {/* Hover Actions */}
+                  <div className="absolute inset-0 pointer-events-none bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                     <button 
-                      onClick={() => addItem(product)}
-                      className="bg-[#191A21] text-white px-6 py-3 text-xs tracking-widest uppercase hover:bg-[#A9AFDE] hover:text-black transition-colors"
+                      onClick={(e) => { e.preventDefault(); addItem(product); toggleCart(); }}
+                      className="bg-[#191A21] pointer-events-auto text-white px-6 py-3 text-xs tracking-widest uppercase hover:bg-[#A9AFDE] hover:text-black transition-colors"
                     >
-                      Adicionar à Sacola
+                      + Sacola
                     </button>
+                    <Link 
+                      href={`/produto/${product.id}`}
+                      className="bg-white pointer-events-auto text-black px-6 py-3 text-xs tracking-widest uppercase hover:bg-[#A9AFDE] hover:text-white transition-colors border border-black"
+                    >
+                      Ver Peça
+                    </Link>
                   </div>
                 </div>
-                <h3 className="text-[#191A21] text-base md:text-lg font-normal tracking-widest uppercase mb-1 text-left truncate">
-                  {product.name}
-                </h3>
+                <Link href={`/produto/${product.id}`} className="hover:text-[#A9AFDE] transition-colors">
+                  <h3 className="text-[#191A21] text-base md:text-lg font-normal tracking-widest uppercase mb-1 text-left truncate">
+                    {product.name}
+                  </h3>
+                </Link>
                 <p className="text-gray-600 text-sm tracking-wide text-left">
                   {Number(product.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </p>

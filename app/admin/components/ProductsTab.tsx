@@ -22,6 +22,8 @@ export function ProductsTab({ setActiveTab }: { setActiveTab: (t: string) => voi
     type: '',
     colors: '', // comma separated string for now
     tags: '', // comma separated string for now
+    delivery_time: '',
+    details: '',
     image: null as File | null,
     additionalMedia: [] as File[],
   });
@@ -87,6 +89,8 @@ export function ProductsTab({ setActiveTab }: { setActiveTab: (t: string) => voi
         type: newProduct.type,
         colors: colorsArray,
         tags: tagsArray,
+        delivery_time: newProduct.delivery_time,
+        details: newProduct.details,
         image_url: mainImageUrl,
         media_urls: mediaUrls
       }]);
@@ -98,6 +102,7 @@ export function ProductsTab({ setActiveTab }: { setActiveTab: (t: string) => voi
       setNewProduct({
         name: '', description: '', price: '', category: '', featured: false,
         stock: '', discount_percentage: '', type: '', colors: '', tags: '',
+        delivery_time: '', details: '',
         image: null, additionalMedia: []
       });
       fetchProducts();
@@ -202,8 +207,12 @@ export function ProductsTab({ setActiveTab }: { setActiveTab: (t: string) => voi
                     <input required className="w-full border border-zinc-200 rounded-2xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-black/5 focus:border-zinc-800" placeholder="Ex: Bolsa Prada" value={newProduct.name} onChange={(e) => setNewProduct({...newProduct, name: e.target.value})} />
                   </div>
                   <div className="col-span-2">
-                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Descrição</label>
-                    <textarea rows={3} className="w-full border border-zinc-200 rounded-2xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-black/5 focus:border-zinc-800 resize-none" placeholder="Detalhes..." value={newProduct.description} onChange={(e) => setNewProduct({...newProduct, description: e.target.value})} />
+                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Descrição Curta (Resumo)</label>
+                    <textarea rows={2} className="w-full border border-zinc-200 rounded-2xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-black/5 focus:border-zinc-800 resize-none" placeholder="Detalhes..." value={newProduct.description} onChange={(e) => setNewProduct({...newProduct, description: e.target.value})} />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Detalhes (Descrição Completa da Página)</label>
+                    <textarea rows={4} className="w-full border border-zinc-200 rounded-2xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-black/5 focus:border-zinc-800 resize-none" placeholder="Tamanho, materiais, história da peça..." value={newProduct.details} onChange={(e) => setNewProduct({...newProduct, details: e.target.value})} />
                   </div>
 
                   <div>
@@ -219,6 +228,11 @@ export function ProductsTab({ setActiveTab }: { setActiveTab: (t: string) => voi
                     <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Estoque (un)</label>
                     <input type="number" required className="w-full border border-zinc-200 rounded-2xl px-4 py-3.5 text-sm outline-none focus:border-zinc-800" value={newProduct.stock} onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})} />
                   </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Prazo de Entrega (Dias Úteis)</label>
+                    <input type="text" placeholder="Ex: 15" className="w-full border border-zinc-200 rounded-2xl px-4 py-3.5 text-sm outline-none focus:border-zinc-800" value={newProduct.delivery_time} onChange={(e) => setNewProduct({...newProduct, delivery_time: e.target.value})} />
+                  </div>
+
                   <div>
                     <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Categoria</label>
                     <input type="text" placeholder="Bolsas, Sapatos..." className="w-full border border-zinc-200 rounded-2xl px-4 py-3.5 text-sm outline-none focus:border-zinc-800" value={newProduct.category} onChange={(e) => setNewProduct({...newProduct, category: e.target.value})} />

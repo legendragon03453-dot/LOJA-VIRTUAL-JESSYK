@@ -26,7 +26,13 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setErrorMsg("Credenciais inválidas. Tente novamente.");
+      if (error.message.includes('Email not confirmed')) {
+        setErrorMsg("Por favor, confirme seu e-mail clicando no link que enviamos para você antes de entrar.");
+      } else if (error.message.includes('Invalid login credentials')) {
+        setErrorMsg("Credenciais inválidas. Verifique seu e-mail e senha.");
+      } else {
+        setErrorMsg(error.message);
+      }
       setLoading(false);
     } else {
       router.push('/conta');

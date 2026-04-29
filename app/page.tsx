@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ShoppingBag } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, SlidersHorizontal, User } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { useCartStore } from '@/store/useCartStore';
+import Link from 'next/link';
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -14,6 +15,17 @@ export default function Home() {
   // Dynamic Data
   const supabase = createClient();
   const [products, setProducts] = useState<any[]>([]);
+
+  // Auth State
+  const [user, setUser] = useState<any>(null);
+
+  // Search State
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [priceMin, setPriceMin] = useState('');
+  const [priceMax, setPriceMax] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState(''); // Brand filter
 
   // Cart Store
   const { items, isCartOpen, toggleCart, addItem, removeItem } = useCartStore();
@@ -26,6 +38,13 @@ export default function Home() {
       if (data) setProducts(data);
     };
     fetchProducts();
+
+    // Check Auth
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+    checkUser();
 
     // Scroll handler for header & video
     const handleScroll = () => {
@@ -93,8 +112,10 @@ export default function Home() {
           </div>
 
           <nav className="flex-1 flex justify-start items-center gap-6 lg:gap-10 text-[#A9AFDE] text-sm tracking-widest font-light pl-10 lg:pl-14">
-            <a href="#" className="hover:text-white transition-colors duration-300">BUSCAR</a>
-            <a href="#" className="hover:text-white transition-colors duration-300">ACESSO</a>
+            <button onClick={() => setIsSearchOpen(true)} className="hover:text-white transition-colors duration-300 uppercase">BUSCAR</button>
+            <Link href={user ? "/conta" : "/login"} className="hover:text-white transition-colors duration-300 uppercase">
+              {user ? "MINHA CONTA" : "ACESSO"}
+            </Link>
             <button onClick={toggleCart} className="hover:text-white transition-colors duration-300 flex items-center gap-2">
               SACOLA ({items.length})
             </button>
@@ -120,8 +141,10 @@ export default function Home() {
           <a href="#" className="text-xl hover:text-gray-400" onClick={() => setIsMobileMenuOpen(false)}>ACERVO</a>
           <a href="#" className="text-xl hover:text-gray-400" onClick={() => setIsMobileMenuOpen(false)}>LANÇAMENTOS</a>
           <a href="#" className="text-xl hover:text-gray-400" onClick={() => setIsMobileMenuOpen(false)}>MANIFESTO</a>
-          <a href="#" className="text-xl hover:text-gray-400" onClick={() => setIsMobileMenuOpen(false)}>BUSCAR</a>
-          <a href="#" className="text-xl hover:text-gray-400" onClick={() => setIsMobileMenuOpen(false)}>ACESSO</a>
+          <button className="text-xl hover:text-gray-400 uppercase" onClick={() => {setIsMobileMenuOpen(false); setIsSearchOpen(true);}}>BUSCAR</button>
+          <Link href={user ? "/conta" : "/login"} className="text-xl hover:text-gray-400 uppercase" onClick={() => setIsMobileMenuOpen(false)}>
+            {user ? "MINHA CONTA" : "ACESSO"}
+          </Link>
         </div>
       )}
 
@@ -172,6 +195,108 @@ export default function Home() {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Search Full Screen Overlay */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 z-[70] bg-[#191A21] flex flex-col animate-in fade-in zoom-in-95 duration-300">
+          <div className="p-6 md:p-8 flex items-center justify-between border-b border-white/10">
+            <div className="flex-1 max-w-4xl mx-auto flex items-center gap-4">
+              <Search className="text-[#A9AFDE]" size={28} />
+              <input 
+                autoFocus
+                type="text" 
+                placeholder="O que você está procurando?" 
+                className="w-full bg-transparent border-none text-white text-xl md:text-3xl font-light outline-none placeholder:text-gray-600"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <button onClick={() => setIsSearchOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+              <X size={32} />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-6 md:p-12 max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-4 gap-12">
+            {/* Filtros Lateral */}
+            <div className="space-y-8 md:border-r border-white/10 md:pr-8">
+              <div>
+                <h3 className="text-white text-sm font-bold tracking-widest uppercase mb-4 flex items-center gap-2"><SlidersHorizontal size={16}/> Filtros</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <label className="text-[#A9AFDE] text-xs font-bold tracking-widest uppercase block">Marca</label>
+                <input 
+                  type="text" 
+                  placeholder="Ex: Prada, Gucci..." 
+                  className="w-full bg-[#242628] border border-zinc-800 rounded-md px-4 py-3 text-sm text-white outline-none focus:border-[#A9AFDE]"
+                  value={selectedBrand}
+                  onChange={e => setSelectedBrand(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-[#A9AFDE] text-xs font-bold tracking-widest uppercase block">Categoria / Tag</label>
+                <input 
+                  type="text" 
+                  placeholder="Ex: Bolsas, Verão..." 
+                  className="w-full bg-[#242628] border border-zinc-800 rounded-md px-4 py-3 text-sm text-white outline-none focus:border-[#A9AFDE]"
+                  value={selectedCategory}
+                  onChange={e => setSelectedCategory(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-[#A9AFDE] text-xs font-bold tracking-widest uppercase block">Preço (R$)</label>
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="number" 
+                    placeholder="Min" 
+                    className="w-full bg-[#242628] border border-zinc-800 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-[#A9AFDE]"
+                    value={priceMin}
+                    onChange={e => setPriceMin(e.target.value)}
+                  />
+                  <span className="text-gray-500">-</span>
+                  <input 
+                    type="number" 
+                    placeholder="Max" 
+                    className="w-full bg-[#242628] border border-zinc-800 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-[#A9AFDE]"
+                    value={priceMax}
+                    onChange={e => setPriceMax(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Resultados */}
+            <div className="md:col-span-3">
+              <h3 className="text-white text-sm font-light tracking-widest uppercase mb-6">Resultados</h3>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                {products.filter(p => {
+                  const matchQuery = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.description?.toLowerCase().includes(searchQuery.toLowerCase());
+                  const matchBrand = !selectedBrand || p.name.toLowerCase().includes(selectedBrand.toLowerCase()) || (p.tags && p.tags.some((t: string) => t.toLowerCase().includes(selectedBrand.toLowerCase())));
+                  const matchCategory = !selectedCategory || (p.category && p.category.toLowerCase().includes(selectedCategory.toLowerCase())) || (p.tags && p.tags.some((t: string) => t.toLowerCase().includes(selectedCategory.toLowerCase())));
+                  const matchMin = !priceMin || p.price >= parseFloat(priceMin);
+                  const matchMax = !priceMax || p.price <= parseFloat(priceMax);
+                  return matchQuery && matchBrand && matchCategory && matchMin && matchMax;
+                }).slice(0, 12).map(product => (
+                  <div key={`search-${product.id}`} className="group flex flex-col">
+                    <div className="aspect-square bg-white w-full flex items-center justify-center p-4 relative overflow-hidden">
+                       <img src={product.image_url} alt={product.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
+                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button onClick={() => { addItem(product); setIsSearchOpen(false); setIsCartOpen(true); }} className="bg-white text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-[#A9AFDE] hover:text-white transition-colors">Ver Peça</button>
+                       </div>
+                    </div>
+                    <div className="mt-3">
+                      <h4 className="text-white text-sm tracking-widest uppercase truncate">{product.name}</h4>
+                      <p className="text-[#A9AFDE] text-sm mt-1">{Number(product.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -349,7 +349,7 @@ export default function Home() {
           
           <div 
             ref={textRef}
-            className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4 text-center pointer-events-none"
+            className="absolute inset-0 flex flex-col items-center justify-center z-30 px-4 text-center pointer-events-none"
             style={{ opacity: 0, transform: 'translateY(20px)' }}
           >
             <h1 className="text-[#A9AFDE] text-lg md:text-2xl lg:text-3xl font-light mb-4 drop-shadow-md">
@@ -436,21 +436,26 @@ export default function Home() {
       {/* Sessão 4: Destaques com Hover */}
       <section className="relative z-10 w-full h-screen bg-[#191A21]">
         <div className="w-full h-full grid grid-cols-1 md:grid-cols-3 gap-0">
-          <a href="#" className="group relative block overflow-hidden h-full w-full cursor-pointer">
-            <img src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/Substitua_bolsa_segunda_202604240049%201_1x.webp?raw=true" alt="Louis Vuitton" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+          <a href="#" className="group relative block overflow-hidden h-full w-full cursor-pointer bg-[#191A21]">
+            {/* Imagem Original */}
+            <img src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/Substitua_bolsa_segunda_202604240049%201_1x.webp?raw=true" alt="Louis Vuitton" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0" />
+            {/* Imagem Hover */}
+            <img src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/Substitua_bolsa_segunda_202604240049%201.png?raw=true" alt="Louis Vuitton Hover" className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-110" />
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 transition-opacity duration-500 group-hover:opacity-100 z-10">
               <h3 className="text-white text-2xl md:text-3xl font-light tracking-widest uppercase text-center px-4">Louis Vuitton</h3>
             </div>
           </a>
-          <a href="#" className="group relative block overflow-hidden h-full w-full cursor-pointer">
-            <img src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/substitua_imagem_por_202604240031%201_1x.webp?raw=true" alt="Prada" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+          <a href="#" className="group relative block overflow-hidden h-full w-full cursor-pointer bg-[#191A21]">
+            <img src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/substitua_imagem_por_202604240031%201_1x.webp?raw=true" alt="Prada" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0" />
+            <img src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/substitua_imagem_por_202604240031%201.png?raw=true" alt="Prada Hover" className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-110" />
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 transition-opacity duration-500 group-hover:opacity-100 z-10">
               <h3 className="text-white text-2xl md:text-3xl font-light tracking-widest uppercase text-center px-4">Prada</h3>
             </div>
           </a>
-          <a href="#" className="group relative block overflow-hidden h-full w-full cursor-pointer">
-            <img src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/Substitua_bolsa_preta_202604241547%201_1x.webp?raw=true" alt="YSL Saint Laurent" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+          <a href="#" className="group relative block overflow-hidden h-full w-full cursor-pointer bg-[#191A21]">
+            <img src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/Substitua_bolsa_preta_202604241547%201_1x.webp?raw=true" alt="YSL Saint Laurent" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0" />
+            <img src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/Substitua_bolsa_preta_202604241547%201.png?raw=true" alt="YSL Saint Laurent Hover" className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-110" />
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 transition-opacity duration-500 group-hover:opacity-100 z-10">
               <h3 className="text-white text-2xl md:text-3xl font-light tracking-widest uppercase text-center px-4">YSL Saint Laurent</h3>
             </div>
           </a>
@@ -486,6 +491,66 @@ export default function Home() {
                 </p>
               </div>
           ))}
+        </div>
+      </section>
+
+      {/* Novo Banner de Vídeo */}
+      <section className="relative z-10 w-full h-[60vh] md:h-[80vh] bg-[#191A21] overflow-hidden flex items-center justify-center">
+        <video 
+          src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/Flowers_appearing_zoom_202604242027.webm?raw=true" 
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-80"
+        />
+        <div className="relative z-10 text-center px-4 pointer-events-none">
+          <h2 className="text-white text-3xl md:text-5xl font-light tracking-widest uppercase drop-shadow-lg" style={{ fontFamily: "'Bacasime Antique', serif" }}>
+            A Essência do Luxo
+          </h2>
+        </div>
+      </section>
+
+      {/* Produtos Secundários */}
+      <section className="relative z-10 w-full min-h-screen bg-[#D6D8EB] flex flex-col items-center justify-center py-24 px-6 shadow-[0_-15px_40px_rgba(0,0,0,0.4)]">
+        <h2 className="text-[#191A21] text-2xl md:text-3xl font-normal tracking-wide uppercase mb-12 text-center">NOSSAS SUGESTÕES</h2>
+        <div className="max-w-6xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
+          {products.slice(4, 8).map(product => (
+              <div key={`sec-${product.id}`} className="flex flex-col group w-full">
+                <div className="aspect-square bg-white w-full flex items-center justify-center overflow-hidden mb-4 p-6 shadow-sm relative">
+                  <Link href={`/produto/${product.id}`}>
+                    <img 
+                      src={product.image_url} 
+                      alt={product.name} 
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </Link>
+                  <div className="absolute inset-0 pointer-events-none bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                    <button 
+                      onClick={(e) => { e.preventDefault(); addItem(product); toggleCart(); }}
+                      className="bg-[#191A21] pointer-events-auto text-white px-6 py-3 text-xs tracking-widest uppercase hover:bg-[#A9AFDE] hover:text-black transition-colors"
+                    >
+                      + Sacola
+                    </button>
+                  </div>
+                </div>
+                <Link href={`/produto/${product.id}`} className="hover:text-[#A9AFDE] transition-colors">
+                  <h3 className="text-[#191A21] text-base md:text-lg font-normal tracking-widest uppercase mb-1 text-left truncate">
+                    {product.name}
+                  </h3>
+                </Link>
+                <p className="text-gray-600 text-sm tracking-wide text-left">
+                  {Number(product.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </p>
+              </div>
+          ))}
+          
+          {/* Fallback caso não tenham 5+ produtos */}
+          {products.length <= 4 && (
+            <div className="col-span-full text-center text-[#191A21] tracking-widest">
+              Em breve mais novidades no acervo...
+            </div>
+          )}
         </div>
       </section>
 

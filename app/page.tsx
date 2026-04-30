@@ -13,6 +13,7 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   
   // Dynamic Data
@@ -52,33 +53,39 @@ export default function Home() {
     // Scroll handler for header & video
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (videoRef.current) {
-            if (entry.isIntersecting) {
-              videoRef.current.play().catch(err => console.log("Autoplay prevented:", err));
-            } else {
-              videoRef.current.pause();
-            }
+      if (sectionRef.current && videoRef.current) {
+        const containerTop = sectionRef.current.offsetTop;
+        const containerHeight = sectionRef.current.offsetHeight;
+        const windowHeight = window.innerHeight;
+        
+        let progress = (window.scrollY - containerTop) / (containerHeight - windowHeight);
+        if (progress < 0) progress = 0;
+        if (progress > 1) progress = 1;
+
+        requestAnimationFrame(() => {
+          if (videoRef.current && videoRef.current.duration) {
+            videoRef.current.currentTime = videoRef.current.duration * progress;
           }
         });
-      },
-      { threshold: 0.1 }
-    );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+        if (overlayRef.current) {
+          let op = 0;
+          if (progress > 0.8) {
+            op = (progress - 0.8) / 0.2;
+          }
+          overlayRef.current.style.opacity = op.toString();
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    if (videoRef.current) {
+      videoRef.current.preload = "auto";
     }
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
     };
   }, []);
 
@@ -265,25 +272,34 @@ export default function Home() {
       {/* Sessão 1: Hero */}
       <section 
         ref={sectionRef}
-        className="sticky top-0 w-full h-screen overflow-hidden z-0"
+        className="relative w-full h-[400vh] z-0"
       >
-        <video
-          ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover -z-10"
-          src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/Flowers_appearing_zoom_202604242027.webm?raw=true"
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="absolute bottom-16 md:bottom-24 left-0 w-full flex flex-col items-center justify-center z-10 px-4 text-center">
-          <h1 className="text-[#A9AFDE] text-lg md:text-2xl lg:text-3xl font-light mb-2 drop-shadow-md">
-            As <span className="font-bold text-white">BOLSAS</span> que você sempre <span className="font-bold text-white">SONHOU</span> AQUI!
-          </h1>
-          <a href="#acervo" className="text-white text-sm md:text-base font-bold tracking-widest uppercase border-b-2 border-white pb-1 hover:text-gray-300 hover:border-gray-300 transition-all duration-300">
-            ADENTRE O ACERVO
-          </a>
+        <div className="sticky top-0 w-full h-screen overflow-hidden">
+          <video
+            ref={videoRef}
+            className="absolute inset-0 w-full h-full object-cover -z-10"
+            src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/Black_hand_grabs_bag_changes_202604292307.webm?raw=true"
+            muted
+            playsInline
+            preload="auto"
+          />
+          <div className="absolute inset-0 bg-black/10"></div>
+          
+          <div className="absolute bottom-16 md:bottom-24 left-0 w-full flex flex-col items-center justify-center z-10 px-4 text-center">
+            <h1 className="text-[#A9AFDE] text-lg md:text-2xl lg:text-3xl font-light mb-2 drop-shadow-md">
+              As <span className="font-bold text-white">BOLSAS</span> que você sempre <span className="font-bold text-white">SONHOU</span> AQUI!
+            </h1>
+            <a href="#acervo" className="text-white text-sm md:text-base font-bold tracking-widest uppercase border-b-2 border-white pb-1 hover:text-gray-300 hover:border-gray-300 transition-all duration-300">
+              ADENTRE O ACERVO
+            </a>
+          </div>
+
+          {/* Fade Overlay for transition */}
+          <div 
+            ref={overlayRef}
+            className="absolute inset-0 bg-[#191A21] pointer-events-none z-20"
+            style={{ opacity: 0 }}
+          ></div>
         </div>
       </section>
 

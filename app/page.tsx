@@ -15,6 +15,7 @@ export default function Home() {
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   // Quantidade de frames exportados
@@ -133,6 +134,16 @@ export default function Home() {
             op = (progress - 0.8) / 0.2;
           }
           overlayRef.current.style.opacity = op.toString();
+        }
+
+        if (textRef.current) {
+          let textOp = 0;
+          if (progress > 0.5) {
+            textOp = Math.min(1, (progress - 0.5) / 0.15);
+          }
+          textRef.current.style.opacity = textOp.toString();
+          const translateY = 20 - (textOp * 20);
+          textRef.current.style.transform = `translateY(${translateY}px)`;
         }
       }
     };
@@ -327,7 +338,7 @@ export default function Home() {
       {/* Sessão 1: Hero */}
       <section 
         ref={sectionRef}
-        className="relative w-full h-[400vh] z-0"
+        className="relative w-full h-[200vh] z-0"
       >
         <div className="sticky top-0 w-full h-screen overflow-hidden">
           <canvas
@@ -336,11 +347,15 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-black/10"></div>
           
-          <div className="absolute bottom-16 md:bottom-24 left-0 w-full flex flex-col items-center justify-center z-10 px-4 text-center">
-            <h1 className="text-[#A9AFDE] text-lg md:text-2xl lg:text-3xl font-light mb-2 drop-shadow-md">
+          <div 
+            ref={textRef}
+            className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4 text-center pointer-events-none"
+            style={{ opacity: 0, transform: 'translateY(20px)' }}
+          >
+            <h1 className="text-[#A9AFDE] text-lg md:text-2xl lg:text-3xl font-light mb-4 drop-shadow-md">
               As <span className="font-bold text-white">BOLSAS</span> que você sempre <span className="font-bold text-white">SONHOU</span> AQUI!
             </h1>
-            <a href="#acervo" className="text-white text-sm md:text-base font-bold tracking-widest uppercase border-b-2 border-white pb-1 hover:text-gray-300 hover:border-gray-300 transition-all duration-300">
+            <a href="#acervo" className="pointer-events-auto text-white text-sm md:text-base font-bold tracking-widest uppercase border-b-2 border-white pb-1 hover:text-gray-300 hover:border-gray-300 transition-all duration-300">
               ADENTRE O ACERVO
             </a>
           </div>

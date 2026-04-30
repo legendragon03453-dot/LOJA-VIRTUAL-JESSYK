@@ -8,6 +8,7 @@ export function CategoriesTab() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newCat, setNewCat] = useState('');
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -24,6 +25,7 @@ export function CategoriesTab() {
     e.preventDefault();
     if (!newCat.trim()) return;
     
+    setAdding(true);
     const slug = newCat.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const { error } = await supabase.from('categories').insert([{ name: newCat.trim(), slug }]);
     
@@ -33,6 +35,7 @@ export function CategoriesTab() {
       setNewCat('');
       fetchCategories();
     }
+    setAdding(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -54,7 +57,7 @@ export function CategoriesTab() {
           <form onSubmit={handleAdd} className="space-y-4">
             <div>
               <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Nome</label>
-              <input required type="text" placeholder="Ex: Bolsas de Luxo" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-zinc-800" value={name} onChange={e => setName(e.target.value)} />
+              <input required type="text" placeholder="Ex: Bolsas de Luxo" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-zinc-800" value={newCat} onChange={e => setNewCat(e.target.value)} />
             </div>
             <button type="submit" disabled={adding} className="w-full bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest active:scale-95 disabled:opacity-50">
               {adding ? <Loader2 size={14} className="animate-spin mx-auto" /> : 'Salvar Categoria'}

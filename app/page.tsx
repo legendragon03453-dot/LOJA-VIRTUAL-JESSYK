@@ -175,10 +175,33 @@ export default function Home() {
         </div>
 
         <div className="hidden md:flex items-center w-full max-w-4xl lg:max-w-5xl mx-auto">
-          <nav className="flex-1 flex justify-end gap-6 lg:gap-10 text-[#A9AFDE] text-sm tracking-widest font-light pr-10 lg:pr-14">
-            <a href="#" className="hover:text-white transition-colors duration-300">ACERVO</a>
-            <a href="#" className="hover:text-white transition-colors duration-300">LANÇAMENTOS</a>
-            <a href="#" className="hover:text-white transition-colors duration-300">MANIFESTO</a>
+          <nav className="flex-1 flex items-center justify-end gap-6 lg:gap-10 text-[#A9AFDE] text-sm tracking-widest font-light pr-10 lg:pr-14">
+            {/* Acervo Dropdown */}
+            <div className="relative group flex items-center h-full py-4">
+              <a href="#acervo" className="hover:text-white transition-colors duration-300">ACERVO</a>
+              <div className="absolute top-full left-0 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                <div className="bg-[#191A21]/95 backdrop-blur-md border border-white/10 flex flex-col shadow-xl shadow-black/50">
+                  <a href="#" className="px-5 py-4 hover:bg-white/10 hover:text-white transition-colors text-xs uppercase tracking-widest">PRADA</a>
+                  <a href="#" className="px-5 py-4 hover:bg-white/10 hover:text-white transition-colors text-xs uppercase tracking-widest">Louis Vuitton</a>
+                  <a href="#" className="px-5 py-4 hover:bg-white/10 hover:text-white transition-colors text-xs uppercase tracking-widest">YSL</a>
+                </div>
+              </div>
+            </div>
+
+            {/* Lançamentos Dropdown */}
+            <div className="relative group flex items-center h-full py-4">
+              <a href="#" className="hover:text-white transition-colors duration-300">LANÇAMENTOS</a>
+              <div className="absolute top-full left-0 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                <div className="bg-[#191A21]/95 backdrop-blur-md border border-white/10 flex flex-col shadow-xl shadow-black/50">
+                  <a href="#" className="px-5 py-4 hover:bg-white/10 hover:text-white transition-colors text-xs uppercase tracking-widest">DESTAQUE</a>
+                  <a href="#" className="px-5 py-4 hover:bg-white/10 hover:text-white transition-colors text-xs uppercase tracking-widest">Descontos</a>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center h-full py-4">
+              <a href="#" className="hover:text-white transition-colors duration-300">MANIFESTO</a>
+            </div>
           </nav>
 
           <div className="flex-shrink-0">
@@ -504,11 +527,6 @@ export default function Home() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover opacity-80"
         />
-        <div className="relative z-10 text-center px-4 pointer-events-none">
-          <h2 className="text-white text-3xl md:text-5xl font-light tracking-widest uppercase drop-shadow-lg" style={{ fontFamily: "'Bacasime Antique', serif" }}>
-            A Essência do Luxo
-          </h2>
-        </div>
       </section>
 
       {/* Produtos Secundários */}

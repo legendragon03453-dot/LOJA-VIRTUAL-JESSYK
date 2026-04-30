@@ -11,10 +11,14 @@ import { CartDrawer } from '@/app/components/CartDrawer';
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imagesRef = useRef<HTMLImageElement[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  // Quantidade de frames exportados
+  const TOTAL_FRAMES = 82;
   
   // Dynamic Data
   const supabase = createClient();
@@ -50,11 +54,65 @@ export default function Home() {
     };
     checkUser();
 
-    // Scroll handler for header & video
+    const drawFrame = (index: number) => {
+      if (canvasRef.current && imagesRef.current[index] && imagesRef.current[index].complete) {
+        const ctx = canvasRef.current.getContext('2d');
+        if (ctx) {
+          const img = imagesRef.current[index];
+          const cw = canvasRef.current.width;
+          const ch = canvasRef.current.height;
+          const iw = img.width;
+          const ih = img.height;
+          
+          if (iw === 0 || ih === 0) return;
+
+          const hRatio = cw / iw;
+          const vRatio = ch / ih;
+          const ratio = Math.max(hRatio, vRatio);
+          const centerShift_x = (cw - iw * ratio) / 2;
+          const centerShift_y = (ch - ih * ratio) / 2;
+          
+          ctx.clearRect(0, 0, cw, ch);
+          ctx.drawImage(img, 0, 0, iw, ih, centerShift_x, centerShift_y, iw * ratio, ih * ratio);
+        }
+      }
+    };
+
+    const handleResize = () => {
+      if (canvasRef.current) {
+        canvasRef.current.width = window.innerWidth;
+        canvasRef.current.height = window.innerHeight;
+        drawFrame(0); // Desenha o primeiro frame no resize
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    // Carregar todas as imagens
+    const loadImages = async () => {
+      const loadedImages = [];
+      for (let i = 0; i < TOTAL_FRAMES; i++) {
+        const img = new Image();
+        const frameNum = i.toString().padStart(3, '0');
+        img.src = `https://raw.githubusercontent.com/legendragon03453-dot/loja-jessyk/main/Black_hand_grabs_bag_changes_202604292307_000/Black_hand_grabs_bag_changes_202604292307_${frameNum}.webp`;
+        await new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve; // continua mesmo se falhar
+        });
+        loadedImages.push(img);
+        
+        // Desenha o frame 0 assim que carregar para evitar tela preta inicial
+        if (i === 0) drawFrame(0);
+      }
+      imagesRef.current = loadedImages;
+    };
+    loadImages();
+
+    // Scroll handler for header & canvas
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
 
-      if (sectionRef.current && videoRef.current) {
+      if (sectionRef.current) {
         const containerTop = sectionRef.current.offsetTop;
         const containerHeight = sectionRef.current.offsetHeight;
         const windowHeight = window.innerHeight;
@@ -63,10 +121,10 @@ export default function Home() {
         if (progress < 0) progress = 0;
         if (progress > 1) progress = 1;
 
+        const frameIndex = Math.min(TOTAL_FRAMES - 1, Math.floor(progress * TOTAL_FRAMES));
+
         requestAnimationFrame(() => {
-          if (videoRef.current && videoRef.current.duration) {
-            videoRef.current.currentTime = videoRef.current.duration * progress;
-          }
+          drawFrame(frameIndex);
         });
 
         if (overlayRef.current) {
@@ -80,12 +138,9 @@ export default function Home() {
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
 
-    if (videoRef.current) {
-      videoRef.current.preload = "auto";
-    }
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -275,13 +330,9 @@ export default function Home() {
         className="relative w-full h-[400vh] z-0"
       >
         <div className="sticky top-0 w-full h-screen overflow-hidden">
-          <video
-            ref={videoRef}
-            className="absolute inset-0 w-full h-full object-cover -z-10"
-            src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/Black_hand_grabs_bag_changes_202604292307.webm?raw=true"
-            muted
-            playsInline
-            preload="auto"
+          <canvas
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full -z-10"
           />
           <div className="absolute inset-0 bg-black/10"></div>
           
@@ -304,7 +355,7 @@ export default function Home() {
       </section>
 
       {/* Sessão 2: Manifesto */}
-      <section className="relative z-10 w-full min-h-screen bg-[#191A21] flex flex-col items-center justify-center py-24 px-6 text-center shadow-[0_-15px_40px_rgba(0,0,0,0.6)]">
+      <section className="relative z-10 w-full min-h-screen bg-[#191A21] flex flex-col items-center justify-center py-24 px-6 text-center">
         <img 
           src="https://github.com/legendragon03453-dot/loja-jessyk/blob/main/JESSYK%20V2%20LOGO.webp?raw=true" 
           alt="S2 Jessyk Logo" 
